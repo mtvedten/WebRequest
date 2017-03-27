@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Xml;
+using UnityEngine.UI;
 
 class WebRequest : MonoBehaviour
 {
+
+    public Text xmlDataOut;
 
     private XmlDocument xmlDoc;
     private WWW www;
@@ -13,38 +16,40 @@ class WebRequest : MonoBehaviour
     private List<string> Players;
     private string fileName;
 
+
+
     void Start()
     {
     //  StartCoroutine(GetText());
    
       //  string myXML = "<?xml version = \"1.0\" encoding=\"UTF - 8\" ?>  < tempdata numDevices = \"3\" > < tempsensor id = \"0\" > 5.44 </ tempsensor > < tempsensor id = \"1\" > 5.19 </ tempsensor >  < tempsensor id = \"2\" > 3.88 </ tempsensor >  < relay status = \"0\" />     </ tempdata > ";
-      GetXML();
+      xmlDataOut.text =  GetXML();
 
     }
 
 
 
-   void GetXML()
+    string GetXML()
     {
         XmlReader xmlReader = XmlReader.Create("http://sjernaroy.tvedten.com:8086/", new XmlReaderSettings { IgnoreWhitespace = true });
         //   xmlReader.ReadInnerXml();
 
         //  XmlReader xmlReader = XmlReader.Create(xml);
 
-
+        string dataOut = "";
         xmlReader.MoveToContent();
        xmlReader.Read();
       
         while (xmlReader.Name == "tempsensor")
         {
-            Debug.Log(xmlReader.GetAttribute("id") + " : " + xmlReader.ReadInnerXml());
+            dataOut += xmlReader.GetAttribute("id") + " : " + xmlReader.ReadInnerXml() + "\n";
 
         }
 
      //   xmlReader.Read();
         
            
-            Debug.Log("Relay: " + xmlReader.GetAttribute("status"));
+           dataOut += "Relay: " + xmlReader.GetAttribute("status") + "\n";;
 
       //  }
         //        Debug.Log(xmlReader.GetAttribute("id")  + " : " + xmlReader.ReadInnerXml());
@@ -66,7 +71,7 @@ class WebRequest : MonoBehaviour
 
             }
         //}
-
+        return dataOut;
     }
 
 
