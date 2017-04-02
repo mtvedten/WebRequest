@@ -20,11 +20,12 @@ public class socketScript : MonoBehaviour {
     public Toggle sensorB;
     public TextMeshProUGUI textOut;
     public Text textBtnLED;
+    public GameObject settingsPanel;
     //variables
     private int buttonCount = 0;
 
 	private TCPConnection myTCP;
-
+   
 	private string serverMsg;
 
 	public string msgToServer;
@@ -39,6 +40,7 @@ public class socketScript : MonoBehaviour {
 
 		myTCP = gameObject.AddComponent<TCPConnection>();
 
+
 	}
 
 
@@ -49,6 +51,9 @@ public class socketScript : MonoBehaviour {
         sensorB.isOn = false;
         sensorA.interactable = false;
         sensorB.interactable = false;
+        settingsPanel.SetActive(false);
+
+
 
         StartCoroutine(setUpSocket());
 
@@ -73,6 +78,12 @@ void OnApplicationPause(bool pause) {
         myTCP.closeSocket();
     }
 
+    public void CloseSocketAndReconnect()
+    {
+        Debug.Log("close and reconnect");
+        myTCP.closeSocket();
+        StartCoroutine(setUpSocket());
+    }
 
 
     void Update () {
@@ -91,13 +102,17 @@ void OnApplicationPause(bool pause) {
     IEnumerator setUpSocket()
     {
         //if connection has not been made, display button to connect
+        myTCP.conHost = GetComponent<Setting>().GetSavedHost();
+        myTCP.conPort = GetComponent<Setting>().GetSavedPort();
+        Debug.Log("Attempting to connect.." + GetComponent<Setting>().GetSavedHost() + ":" + GetComponent<Setting>().GetSavedPort());
 
-        if (myTCP.socketReady == false)
+        if (myTCP.socketReady == false) 
         {
 
+           
             myTCP.setupSocket();
-            Debug.Log("Attempting to connect..");
-            yield return null;
+
+            yield return false;
 
 
 
