@@ -53,6 +53,20 @@ public class socketScript : MonoBehaviour {
         StartCoroutine(setUpSocket());
 
     }
+
+void OnApplicationPause(bool pause) {
+    
+    if (pause) {
+        myTCP.closeSocket();
+        Debug.Log("APP PAUSED");
+    }
+    else {
+        StartCoroutine(setUpSocket());
+          Debug.Log("APP RESUMED");
+    }
+    
+}
+
     void OnApplicationQuit()
     {
         Debug.Log("Application ending");

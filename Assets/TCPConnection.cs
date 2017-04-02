@@ -32,6 +32,7 @@ public class TCPConnection : MonoBehaviour {
 			theWriter = new StreamWriter(theStream);
 			theReader = new StreamReader(theStream);
 			socketReady = true;
+			Debug.Log("Socket ready");
 		}
 		catch (Exception e) {
 			Debug.Log("Socket error:" + e);
@@ -66,6 +67,7 @@ public class TCPConnection : MonoBehaviour {
 		theReader.Close();
 		mySocket.Close();
 		socketReady = false;
+		Debug.Log("Socket closed");
 	}
 	
 	//keep connection alive, reconnect if connection lost
