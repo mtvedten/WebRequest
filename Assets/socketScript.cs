@@ -9,14 +9,19 @@ using System.Collections.Generic;
 using System.Text;
 
 using System;
+using UnityEngine.UI;
+using TMPro;
 
 
 
 public class socketScript : MonoBehaviour {
 
-	
-
-	//variables
+    public Toggle sensorA;
+    public Toggle sensorB;
+    public TextMeshProUGUI textOut;
+    public Text textBtnLED;
+    //variables
+    private int buttonCount = 0;
 
 	private TCPConnection myTCP;
 
@@ -39,10 +44,15 @@ public class socketScript : MonoBehaviour {
 
 
 	void Start () {
+        Debug.Log("Start");
+        sensorA.isOn = false;
+        sensorB.isOn = false;
+        sensorA.interactable = false;
+        sensorB.interactable = false;
 
-		
+        StartCoroutine(setUpSocket());
 
-	}
+    }
     void OnApplicationQuit()
     {
         Debug.Log("Application ending");
@@ -64,72 +74,99 @@ public class socketScript : MonoBehaviour {
 	}
 
 
+    IEnumerator setUpSocket()
+    {
+        //if connection has not been made, display button to connect
 
-	void OnGUI() {
+        if (myTCP.socketReady == false)
+        {
 
-		
-
-		//if connection has not been made, display button to connect
-
-		if (myTCP.socketReady == false) {
-
-			
-
-			if (GUILayout.Button ("Connect")) {
-
-				//try to connect
-
-				Debug.Log("Attempting to connect..");
-
-				myTCP.setupSocket();
-
-			}
-
-		
-
-		}
-
-		
-
-		//once connection has been made, display editable text field with a button to send that string to the server (see function below)
-
-		if (myTCP.socketReady == true) {
-
-		
-
-			msgToServer = GUILayout.TextField(msgToServer);
-
-							
-
-			if (GUILayout.Button ("Write to server", GUILayout.Height(30))) {
-
-					SendToServer(msgToServer);
-
-			}
-
-		
-
-		}
+            myTCP.setupSocket();
+            Debug.Log("Attempting to connect..");
+            yield return null;
 
 
 
+        }
 
 
-	}
+
+        //once connection has been made, display editable text field with a button to send that string to the server (see function below)
+
+        if (myTCP.socketReady == true)
+        {
+
+            Debug.Log("Socket ready");
+    
+            textOut.SetText("Socket ready:" + myTCP.conName + "\n" + myTCP.conHost + ":" + myTCP.conPort);
+            SendToServer("X");
+            yield return null;
+            //msgToServer = GUILayout.TextField(msgToServer);
+
+
+
+            /*if (GUILayout.Button("Write to server", GUILayout.Height(30)))
+            {
+
+                SendToServer(msgToServer);
+                */
+            }
+            
+        }
 
 	
+
+	public void buttonLED ()
+    {
+        SendToServer("D");
+    }
 
 	//socket reading script
 
 	void SocketResponse() {
 
 		string serverSays = myTCP.readSocket();
+        
 
-		if (serverSays != "") {
+        if (serverSays != "") {
+           
+            Debug.Log("[SERVER]" + serverSays);
+         
 
-			Debug.Log("[SERVER]" + serverSays);
+            if (serverSays.IndexOf("A1", 0) > -1) {
+                sensorA.isOn  = true;
+            }
+            if (serverSays.IndexOf("A0", 0) > -1)
+            {
+                sensorA.isOn = false;
+            }
 
-		}
+
+            if (serverSays.IndexOf("B1", 0) > -1)
+            {
+                sensorB.isOn = true;
+            }
+            if (serverSays.IndexOf("B0", 0) > -1)
+            {
+                sensorB.isOn = false;
+            }
+
+            if (serverSays.IndexOf("L1", 0) > -1)
+            {
+                textBtnLED.text = "LED ON";
+            }
+            if (serverSays.IndexOf("L0", 0) > -1)
+            {
+                textBtnLED.text = "LED OFF";
+            }
+
+            if (serverSays.IndexOf("Knapp",0) > -1)
+            {
+                buttonCount++;
+                textOut.SetText("Knapp trykket " + buttonCount);
+            }
+
+        }
 
 
 

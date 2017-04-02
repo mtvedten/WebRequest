@@ -11,12 +11,13 @@ public class TCPConnection : MonoBehaviour {
 	
 	//ip/address of the server, 127.0.0.1 is for your own computer
 	public string conHost = "192.168.1.120";
-	
-	//port for the server, make sure to unblock this in your router firewall if you want to allow external connections
-	public int conPort = 27015;
-	
-	//a true/false variable for connection status
-	public bool socketReady = false;
+
+    //port for the server, make sure to unblock this in your router firewall if you want to allow external connections
+    //public int conPort = 27015;
+    public int conPort = 80;
+
+    //a true/false variable for connection status
+    public bool socketReady = false;
 	
 	TcpClient mySocket;
 	NetworkStream theStream;
@@ -70,6 +71,7 @@ public class TCPConnection : MonoBehaviour {
 	//keep connection alive, reconnect if connection lost
 	public void maintainConnection(){
 		if(!theStream.CanRead) {
+            Debug.Log("Lost connection");
 			setupSocket();
 		}
 	}
